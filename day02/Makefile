@@ -5,6 +5,6 @@ DAY = 02
 run: build
 	sudo docker run -it --rm aoc2018day$(DAY)
 
-build:
+build: part* input
 	sudo docker build -t aoc2018day$(DAY) .
 	touch build
