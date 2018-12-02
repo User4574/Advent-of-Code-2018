@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+class String
+	def distance(other)
+		sa = self.chars
+		oa = other.chars
+		d = 0
+		(0...self.length).each do |i|
+			d += 1 if sa[i] != oa[i]
+		end
+		return d
+	end
+
+	def difference(other)
+		sa = self.chars
+		oa = other.chars
+		(0...self.length).each do |i|
+			sa[i] = nil if sa[i] != oa[i]
+		end
+		return sa.join
+	end
+end
+
+input = $stdin.readlines.map(&:chomp)
+
+(0...input.length).each do |i|
+	(i...input.length).each do |j|
+		if input[i].distance(input[j]) == 1
+			puts input[i].difference(input[j])
+			exit
+		end
+	end
+end

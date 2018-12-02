@@ -1,0 +1,14 @@
+h1. Advent of Code 2018
+
+p. My answers thereto.
+
+h2. Running a day
+
+bc. cd day01
+make
+
+h2. Creating a new day
+
+bc. cp -r skel day01
+cd day01
+sed -ie 's/DAY = /DAY = 01/' Makefile

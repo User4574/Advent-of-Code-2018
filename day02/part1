@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+class Integer
+	def two?
+		self == 2
+	end
+	def three?
+		self == 3
+	end
+end
+
+input = $stdin.readlines.map(&:chomp)
+
+twos = 0
+threes = 0
+
+input.each do |i|
+	hash = Hash.new(0)
+	i.chars.each do |c|
+		hash[c] += 1
+	end
+	twos += 1 if hash.values.map(&:two?).any?
+	threes += 1 if hash.values.map(&:three?).any?
+end
+
+puts twos * threes

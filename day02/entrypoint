@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ -x part1 ] ; then
+	echo -ne "Part 1:\n\t"
+	./part1 < input
+fi
+if [ -x part2 ] ; then
+	echo -ne "Part 2:\n\t"
+	./part2 < input
+fi
