@@ -13,6 +13,8 @@ bc. ./new 01
 
 h2. Registry
 
+h3. Currently down
+
 p. You can pull and run images from my registry
 
 bc. docker pull advent.4574.co.uk/aoc2018day01
