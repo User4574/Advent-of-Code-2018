@@ -9,6 +9,4 @@ make
 
 h2. Creating a new day
 
-bc. cp -r skel day01
-cd day01
-sed -ie 's/DAY = /DAY = 01/' Makefile
+bc. ./new 01
