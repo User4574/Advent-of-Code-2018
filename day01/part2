@@ -3,15 +3,21 @@
 input = $stdin.readlines.map(&:to_i)
 
 lf = 0
-freq = [0]
+posifreq = [true]
+negifreq = []
 
 loop do
 	input.each do |i|
 		lf += i
-		if freq.include?(lf)
+		if  lf >= 0 && posifreq[lf]  ||
+        lf < 0  && negifreq[-lf]
 			puts lf
 			exit
 		end
-		freq << lf
+    if lf >= 0
+  		posifreq[lf] = true
+    else
+      negifreq[-lf] = true
+    end
 	end
 end
