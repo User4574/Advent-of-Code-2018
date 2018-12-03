@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+cloth = Array.new(1000) do
+  Array.new(1000) do
+    Array.new
+  end
+end
+
+input = $stdin.readlines.map(&:chomp).map do |x|
+  /#(\d+) @ (\d+),(\d+): (\d+)x(\d+)/.match(x).captures.map(&:to_i)
+end
+
+input.each do |claim|
+  (claim[1]...(claim[1]+claim[3])).each do |c|
+    (claim[2]...(claim[2]+claim[4])).each do |r|
+      cloth[c][r] << claim[0]
+    end
+  end
+end
+
+clashes = 0
+
+cloth.each do |c|
+  c.each do |r|
+    clashes += 1 if r.length > 1
+  end
+end
+
+puts clashes

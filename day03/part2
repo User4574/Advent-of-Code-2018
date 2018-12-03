@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+cloth = Array.new(1000) do
+  Array.new(1000) do
+    Array.new
+  end
+end
+
+input = $stdin.readlines.map(&:chomp).map do |x|
+  /#(\d+) @ (\d+),(\d+): (\d+)x(\d+)/.match(x).captures.map(&:to_i)
+end
+
+input.each do |claim|
+  (claim[1]...(claim[1]+claim[3])).each do |c|
+    (claim[2]...(claim[2]+claim[4])).each do |r|
+      cloth[c][r] << claim[0]
+    end
+  end
+end
+
+overlaps = Array.new(input[-1][0], false)
+
+cloth.each do |c|
+  c.each do |r|
+    if r.length > 1
+      r.each do |id|
+        overlaps[id-1] = true
+      end
+    end
+  end
+end
+
+puts overlaps.index(false) + 1
