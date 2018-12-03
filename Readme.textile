@@ -1,6 +1,6 @@
 h1. Advent of Code 2018
 
-p. My answers thereto.
+p. My answers to the "2018 Advent of Code":https://adventofcode.com/2018.
 
 h2. Running a day
 
@@ -10,3 +10,15 @@ make
 h2. Creating a new day
 
 bc. ./new 01
+
+h2. Registry
+
+p. You can pull and run images from my registry
+
+bc. docker pull advent.4574.co.uk/aoc2018day01
+
+h3. Pushing to registry
+
+p. If you're me, you can push to the registry with:
+
+bc. make push
