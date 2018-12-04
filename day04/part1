@@ -24,7 +24,7 @@ end
 times = []
 guards.each do |id, days|
   sum = 0
-  days.each do |day|
+  days.each_value do |day|
     sum += day.count(true)
   end
   times[id] = sum
