@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+
+input = $stdin.readlines.map(&:chomp).sort
+
+currentguard = nil
+guards = Hash.new { |h,k| h[k] = Hash.new { |h,k| h[k] = Array.new(60, false) } }
+
+(0...input.length).each do |i|
+  if input[i] =~ /\[1518-\d\d-\d\d \d\d:\d\d\] Guard #(\d+) begins shift/
+    currentguard = $1.to_i
+  elsif input[i] =~ /\[1518-(\d\d-\d\d) \d\d:(\d\d)\] falls asleep/
+    date = $1
+    smin = $2.to_i
+    input[i+1] =~ /\[1518-\d\d-\d\d \d\d:(\d\d)\] wakes up/
+    emin = $1.to_i
+    (smin...emin).each do |m|
+      guards[currentguard][date][m] = true
+    end
+  else
+    next
+  end
+end
+
+sleepiestguard = nil
+maxmin = 0
+
+guards.each do |id, days|
+  minutes = Array.new(60, 0)
+  (0...60).each do |m|
+    days.each_value do |mins|
+      minutes[m] += 1 if mins[m]
+    end
+  end
+  if minutes.max > maxmin
+    maxmin = minutes.max
+    sleepiestguard = id
+  end
+end
+
+minutes = Array.new(60, 0)
+(0...60).each do |m|
+  guards[sleepiestguard].each_value do |mins|
+    minutes[m] += 1 if mins[m]
+  end
+end
+
+sleepiestminute = minutes.index(minutes.max)
+
+puts sleepiestguard * sleepiestminute
