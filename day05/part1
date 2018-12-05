@@ -2,26 +2,21 @@
 
 input = gets.chomp.chars
 
-l = input.length
-loop do
-  i = input.length - 1
-  loop do
-    break if i < 1
+polymer = input
+nextpolymer = Array.new(polymer.length)
+nextpolymer[0] = polymer[0]
+index = 1
+nextindex = 0
 
-    if input[i] == input[i-1].swapcase
-      input[i] = nil
-      input[i-1] = nil
-      i -= 2
-    else
-      i -= 1
-    end
-  end
-  input = input.compact
-  if input.length == l
-    break
+while index < polymer.length do
+  if polymer[index].swapcase != nextpolymer[nextindex]
+    nextindex += 1
+    nextpolymer[nextindex] = polymer[index]
   else
-    l = input.length
+    nextpolymer[nextindex] = nil
+    nextindex -= 1
   end
+  index += 1
 end
 
-puts input.length
+puts nextpolymer.compact.length

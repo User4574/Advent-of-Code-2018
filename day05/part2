@@ -8,27 +8,23 @@ lengths = {}
 units.each do |unit|
   polymer = input.dup
   polymer.delete_if {|u| u == unit || u == unit.upcase}
-  l = polymer.length
-  loop do
-    i = polymer.length - 1
-    loop do
-      break if i < 1
+  nextpolymer = Array.new(polymer.length)
+  nextpolymer[0] = polymer[0]
+  index = 1
+  nextindex = 0
 
-      if polymer[i] == polymer[i-1].swapcase
-        polymer.delete_at(i)
-        polymer.delete_at(i-1)
-        i -= 2
-      else
-        i -= 1
-      end
-    end
-    if polymer.length == l
-      break
+  while index < polymer.length do
+    if polymer[index].swapcase != nextpolymer[nextindex]
+      nextindex += 1
+      nextpolymer[nextindex] = polymer[index]
     else
-      l = polymer.length
+      nextpolymer[nextindex] = nil
+      nextindex -= 1
     end
+    index += 1
   end
-  lengths[unit] = polymer.length
+
+  lengths[unit] = nextpolymer.compact.length
 end
 
 puts lengths.values.min
