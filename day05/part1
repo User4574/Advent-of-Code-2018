@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+
+input = gets.chomp.chars
+
+l = input.length
+loop do
+  i = input.length - 1
+  loop do
+    break if i < 1
+
+    if input[i] == input[i-1].swapcase
+      input[i] = nil
+      input[i-1] = nil
+      i -= 2
+    else
+      i -= 1
+    end
+  end
+  input = input.compact
+  if input.length == l
+    break
+  else
+    l = input.length
+  end
+end
+
+puts input.length
