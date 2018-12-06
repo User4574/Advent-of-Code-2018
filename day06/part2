@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+def manhattan_distance(x, y, p)
+  return (x - p.first).abs + (y - p.last).abs
+end
+
+input = $stdin.readlines.map(&:chomp).map{|i|i.split(", ").map(&:to_i)}
+MAX_DISTANCE = 10000
+
+xoff = input.map(&:first).min - 1
+yoff = input.map(&:last).min - 1
+
+input.each do |p|
+  p[0] -= xoff
+  p[1] -= yoff
+end
+
+wid = input.map(&:first).max + 1
+hei = input.map(&:last).max + 1
+
+grid = Array.new(wid) { Array.new(hei, false) }
+
+(0...wid).each do |x|
+  (0...hei).each do |y|
+    dist_sum = input.map{|p|manhattan_distance(x, y, p)}.sum
+    grid[x][y] = true if dist_sum < MAX_DISTANCE
+  end
+end
+
+puts grid.flatten.count(true)

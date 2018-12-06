@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+
+def manhattan_distance(x, y, p)
+  return (x - p.first).abs + (y - p.last).abs
+end
+
+def closest_points(x, y, points)
+  dists = points.map{|p|manhattan_distance(x, y, p)}
+  min = dists.min
+  return (0...dists.length).each.select{|i|dists[i] == min}
+end
+
+def edge_points(grid)
+  xa = grid.first
+  xz = grid.last
+  ya = grid.map(&:first).flatten
+  yz = grid.map(&:last).flatten
+  return (xa + xz + ya + yz).compact.uniq
+end
+
+input = $stdin.readlines.map(&:chomp).map{|i|i.split(", ").map(&:to_i)}
+
+xoff = input.map(&:first).min - 1
+yoff = input.map(&:last).min - 1
+
+input.each do |p|
+  p[0] -= xoff
+  p[1] -= yoff
+end
+
+wid = input.map(&:first).max + 1
+hei = input.map(&:last).max + 1
+
+grid = Array.new(wid) { Array.new(hei, nil) }
+
+(0...wid).each do |x|
+  (0...hei).each do |y|
+    cps = closest_points(x, y, input)
+    if cps.length == 1
+      grid[x][y] = cps.first
+    end
+  end
+end
+
+eps = edge_points(grid)
+candidates = (0...input.length).to_a - eps
+
+grid = grid.flatten.compact
+counts = []
+
+candidates.each do |c|
+  counts << grid.count(c)
+end
+
+puts counts.compact.max
