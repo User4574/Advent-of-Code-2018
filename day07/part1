@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+input = $stdin.readlines.map do |i|
+  i =~ /Step ([A-Z]) must be finished before step ([A-Z]) can begin./
+  [$2, $1]
+end
+
+steps = input.flatten.uniq.sort
+prereqs = {}
+
+steps.each do |s|
+  prereqs[s] = []
+end
+
+input.each do |i|
+  prereqs[i.first] << i.last
+end
+
+order = []
+
+until prereqs.empty? do
+  next_step = prereqs.select { |k,v| v.empty? }.keys.sort.first
+  order << next_step
+  prereqs.delete(next_step)
+  prereqs.each_key do |k|
+    prereqs[k].delete(next_step)
+  end
+end
+
+puts order.join

@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+input = $stdin.readlines.map do |i|
+  i =~ /Step ([A-Z]) must be finished before step ([A-Z]) can begin./
+  [$2, $1]
+end
+
+steps = input.flatten.uniq.sort
+prereqs = {}
+workers = Array.new(5, nil)
+now = 0
+
+steps.each do |s|
+  prereqs[s] = []
+end
+
+input.each do |i|
+  prereqs[i.first] << i.last
+end
+
+until prereqs.empty? && !workers.any? do
+  workers.each_index do |i|
+    next unless workers[i]
+    workers[i][1] -= 1
+    if workers[i][1].zero?
+      ns = workers[i][0]
+      prereqs.each_key do |k|
+        prereqs[k].delete(ns)
+      end
+      workers[i] = nil
+    end
+  end
+
+  next_steps = prereqs.select { |k,v| v.empty? }.keys.sort
+  workers.each_index do |i|
+    unless workers[i] || next_steps.empty?
+      ns = next_steps.shift
+      time = ns.ord - 64 + 60
+      workers[i] = [ns, time]
+      prereqs.delete(ns)
+    end
+  end
+
+  now += 1
+end
+
+puts now - 1
