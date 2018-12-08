@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+def parse_tree(input, start)
+  num_children = input[start]
+  num_metadata = input[start + 1]
+
+  children = []
+  next_index = start + 2
+  while num_children > 0 do
+    sum, endindex = parse_tree(input, next_index)
+    children << sum
+    next_index = endindex + 1
+    num_children -= 1
+  end
+
+  value = 0
+  if children.empty?
+    while num_metadata > 0 do
+      value += input[next_index]
+      next_index += 1
+      num_metadata -= 1
+    end
+  else
+    while num_metadata > 0 do
+      i = input[next_index]
+      value += children[i - 1] if i <= children.length
+      next_index += 1
+      num_metadata -= 1
+    end
+  end
+  return [ value, next_index - 1 ]
+end
+
+input = gets.chomp.split.map(&:to_i)
+
+puts parse_tree(input, 0)[0]
