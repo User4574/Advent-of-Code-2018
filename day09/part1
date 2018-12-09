@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+input = gets.chomp
+input =~ /(\d+) players; last marble is worth (\d+) points/
+num_players = $1.to_i
+num_marbles = $2.to_i
+marbles = [0]
+players = Array.new(num_players, 0)
+current = 0
+player = 0
+
+num_marbles.times do |m|
+  marble = m + 1
+
+  if (marble % 23).zero?
+    players[player] += marble
+    d = (current - 7) % marbles.length
+    players[player] += marbles.delete_at(d)
+    current = d
+  else
+    nm = ((current + 1) % marbles.length) + 1
+    marbles.insert(nm, marble)
+    current = nm
+  end
+
+  player = (player + 1) % num_players
+end
+
+puts players.max
