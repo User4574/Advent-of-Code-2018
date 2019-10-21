@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+
+require 'ostruct'
+
+input = $stdin.readlines.map(&:strip)[0].to_i
+
+grid = Array.new(300) { Array.new(300, 0) }
+
+300.times { |i|
+  300.times { |j|
+    x = i + 1
+    y = j + 1
+    r = x + 10
+    p = r * y
+    p += input
+    p *= r
+    p = (p / 100) % 10
+    p -= 5
+    grid[i][j] = p
+  }
+}
+
+max = OpenStruct.new({x: 0, y: 0, p:0})
+
+298.times { |i|
+  298.times { |j|
+    p = 0
+    p += grid[i+0][j+0]
+    p += grid[i+0][j+1]
+    p += grid[i+0][j+2]
+    p += grid[i+1][j+0]
+    p += grid[i+1][j+1]
+    p += grid[i+1][j+2]
+    p += grid[i+2][j+0]
+    p += grid[i+2][j+1]
+    p += grid[i+2][j+2]
+
+    if p > max.p then
+      max.p = p
+      max.x = i + 1
+      max.y = j + 1
+    end
+  }
+}
+
+puts "#{max.x},#{max.y}"
