@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+input = $stdin.readlines[0].strip.chars.map(&:to_i)
+ilen = input.length
+
+scores = [3, 7]
+elf1 = 0
+elf2 = 1
+
+loop do
+  se1 = scores[elf1]
+  se2 = scores[elf2]
+
+  sum = se1 + se2
+  scores += sum.to_s.chars.map(&:to_i)
+  
+  slen = scores.length
+
+  elf1 = (elf1 + 1 + se1) % slen
+  elf2 = (elf2 + 1 + se2) % slen
+
+  m1 = scores[-ilen..-1]
+  m2 = scores[-ilen-1..-2]
+
+  if m1 == input then
+    puts slen - ilen
+    break
+  elsif m2 == input then
+    puts slen - ilen - 1
+    break
+  end
+end
