@@ -1,0 +1,219 @@
+#!/usr/bin/env ruby
+
+class Cart
+  def initialize(dir = nil)
+    @dir = dir
+    @next = :l
+    @moved = false
+  end
+
+  def moved?
+    @moved
+  end
+
+  def moved
+    @moved = true
+  end
+
+  def reset
+    @moved = false
+  end
+
+  attr_reader :dir
+
+  def turn(dir = nil)
+    case dir
+    when :l
+      case @dir
+      when :u
+        @dir = :l
+      when :d
+        @dir = :r
+      when :l
+        @dir = :d
+      when :r
+        @dir = :u
+      end
+    when :r
+      case @dir
+      when :u
+        @dir = :r
+      when :d
+        @dir = :l
+      when :l
+        @dir = :u
+      when :r
+        @dir = :d
+      end
+    else
+      case @next
+      when :l
+        @next = :s
+        self.turn(:l)
+      when :s
+        @next = :r
+      when :r
+        @next = :l
+        self.turn(:r)
+      end
+    end
+  end
+end
+
+class Cell
+  def initialize(track = nil, cart = nil)
+    @track = track
+    @cart = cart
+  end
+
+  attr_accessor :cart
+  attr_reader :track
+
+  def maybe_turn_cart
+    case @track
+    when :b
+      case @cart.dir
+      when :u
+        @cart.turn(:l)
+      when :d
+        @cart.turn(:l)
+      when :l
+        @cart.turn(:r)
+      when :r
+        @cart.turn(:r)
+      end
+    when :f
+      case @cart.dir
+      when :u
+        @cart.turn(:r)
+      when :d
+        @cart.turn(:r)
+      when :l
+        @cart.turn(:l)
+      when :r
+        @cart.turn(:l)
+      end
+    when :i
+      @cart.turn
+    end
+  end
+
+  def show
+    case @cart&.dir
+    when :u
+      "^"
+    when :d
+      "v"
+    when :l
+      "<"
+    when :r
+      ">"
+    else
+      case @track
+      when :v
+        "|"
+      when :h
+        "-"
+      when :f
+        "/"
+      when :b
+        "\\"
+      when :i
+        "+"
+      else
+        " "
+      end
+    end
+  end
+end
+
+input = $stdin.readlines
+
+grid = []
+
+input.each do |irow|
+  grow = []
+  irow.chars.each do |cell|
+    case cell
+    when " "
+      grow << Cell.new
+    when "-"
+      grow << Cell.new(:h)
+    when "|"
+      grow << Cell.new(:v)
+    when "/"
+      grow << Cell.new(:f)
+    when "\\"
+      grow << Cell.new(:b)
+    when "+"
+      grow << Cell.new(:i)
+    when "^"
+      grow << Cell.new(:v, Cart.new(:u))
+    when "v"
+      grow << Cell.new(:v, Cart.new(:d))
+    when "<"
+      grow << Cell.new(:h, Cart.new(:l))
+    when ">"
+      grow << Cell.new(:h, Cart.new(:r))
+    end
+  end
+  grid << grow
+end
+
+loop do
+  grid.each do |row|
+    row.each do |cell|
+      cell.cart&.reset
+    end
+  end
+
+  grid.length.times do |row|
+    grid[row].length.times do |col|
+      cart = grid[row][col].cart
+      unless cart&.moved? then
+        case cart&.dir
+        when :u
+          newcell = grid[row-1][col]
+          if newcell.cart then
+            puts "#{col},#{row-1}"
+            exit 0
+          end
+          cart.moved
+          grid[row][col].cart = nil
+          newcell.cart = cart
+          newcell.maybe_turn_cart
+        when :d
+          newcell = grid[row+1][col]
+          if newcell.cart then
+            puts "#{col},#{row+1}"
+            exit 0
+          end
+          cart.moved
+          grid[row][col].cart = nil
+          newcell.cart = cart
+          newcell.maybe_turn_cart
+        when :l
+          newcell = grid[row][col-1]
+          if newcell.cart then
+            puts "#{col-1},#{row}"
+            exit 0
+          end
+          cart.moved
+          grid[row][col].cart = nil
+          newcell.cart = cart
+          newcell.maybe_turn_cart
+        when :r
+          newcell = grid[row][col+1]
+          if newcell.cart then
+            puts "#{col+1},#{row}"
+            exit 0
+          end
+          cart.moved
+          grid[row][col].cart = nil
+          newcell.cart = cart
+          newcell.maybe_turn_cart
+        end
+      end
+    end
+  end
+end

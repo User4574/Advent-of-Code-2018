@@ -1,0 +1,232 @@
+#!/usr/bin/env ruby
+
+class Cart
+  def initialize(dir = nil)
+    @dir = dir
+    @next = :l
+    @moved = false
+  end
+
+  def moved?
+    @moved
+  end
+
+  def moved
+    @moved = true
+  end
+
+  def reset
+    @moved = false
+  end
+
+  attr_reader :dir
+
+  def turn(dir = nil)
+    case dir
+    when :l
+      case @dir
+      when :u
+        @dir = :l
+      when :d
+        @dir = :r
+      when :l
+        @dir = :d
+      when :r
+        @dir = :u
+      end
+    when :r
+      case @dir
+      when :u
+        @dir = :r
+      when :d
+        @dir = :l
+      when :l
+        @dir = :u
+      when :r
+        @dir = :d
+      end
+    else
+      case @next
+      when :l
+        @next = :s
+        self.turn(:l)
+      when :s
+        @next = :r
+      when :r
+        @next = :l
+        self.turn(:r)
+      end
+    end
+  end
+end
+
+class Cell
+  def initialize(track = nil, cart = nil)
+    @track = track
+    @cart = cart
+  end
+
+  attr_accessor :cart
+  attr_reader :track
+
+  def maybe_turn_cart
+    case @track
+    when :b
+      case @cart.dir
+      when :u
+        @cart.turn(:l)
+      when :d
+        @cart.turn(:l)
+      when :l
+        @cart.turn(:r)
+      when :r
+        @cart.turn(:r)
+      end
+    when :f
+      case @cart.dir
+      when :u
+        @cart.turn(:r)
+      when :d
+        @cart.turn(:r)
+      when :l
+        @cart.turn(:l)
+      when :r
+        @cart.turn(:l)
+      end
+    when :i
+      @cart.turn
+    end
+  end
+
+  def show
+    case @cart&.dir
+    when :u
+      "^"
+    when :d
+      "v"
+    when :l
+      "<"
+    when :r
+      ">"
+    else
+      case @track
+      when :v
+        "|"
+      when :h
+        "-"
+      when :f
+        "/"
+      when :b
+        "\\"
+      when :i
+        "+"
+      else
+        " "
+      end
+    end
+  end
+end
+
+input = $stdin.readlines
+
+grid = []
+
+input.each do |irow|
+  grow = []
+  irow.chars.each do |cell|
+    case cell
+    when " "
+      grow << Cell.new
+    when "-"
+      grow << Cell.new(:h)
+    when "|"
+      grow << Cell.new(:v)
+    when "/"
+      grow << Cell.new(:f)
+    when "\\"
+      grow << Cell.new(:b)
+    when "+"
+      grow << Cell.new(:i)
+    when "^"
+      grow << Cell.new(:v, Cart.new(:u))
+    when "v"
+      grow << Cell.new(:v, Cart.new(:d))
+    when "<"
+      grow << Cell.new(:h, Cart.new(:l))
+    when ">"
+      grow << Cell.new(:h, Cart.new(:r))
+    end
+  end
+  grid << grow
+end
+
+loop do
+  carts = 0
+  lastcart = {x: 0, y: 0}
+  
+  grid.length.times do |row|
+    grid[row].length.times do |col|
+      if grid[row][col].cart then
+        grid[row][col].cart.reset
+        lastcart[:x] = col
+        lastcart[:y] = row
+        carts += 1
+      end
+    end
+  end
+
+  if carts == 1 then
+    puts "#{lastcart[:x]},#{lastcart[:y]}"
+    exit 0
+  end
+
+  grid.length.times do |row|
+    grid[row].length.times do |col|
+      cart = grid[row][col].cart
+      unless cart&.moved? then
+        case cart&.dir
+        when :u
+          cart.moved
+          grid[row][col].cart = nil
+          newcell = grid[row-1][col]
+          if newcell.cart then
+            newcell.cart = nil
+          else
+            newcell.cart = cart
+            newcell.maybe_turn_cart
+          end
+        when :d
+          cart.moved
+          grid[row][col].cart = nil
+          newcell = grid[row+1][col]
+          if newcell.cart then
+            newcell.cart = nil
+          else
+            newcell.cart = cart
+            newcell.maybe_turn_cart
+          end
+        when :l
+          cart.moved
+          grid[row][col].cart = nil
+          newcell = grid[row][col-1]
+          if newcell.cart then
+            newcell.cart = nil
+          else
+            newcell.cart = cart
+            newcell.maybe_turn_cart
+          end
+        when :r
+          cart.moved
+          grid[row][col].cart = nil
+          newcell = grid[row][col+1]
+          if newcell.cart then
+            newcell.cart = nil
+          else
+            newcell.cart = cart
+            newcell.maybe_turn_cart
+          end
+        end
+      end
+    end
+  end
+end
