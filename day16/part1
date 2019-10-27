@@ -1,0 +1,116 @@
+#!/usr/bin/env ruby
+
+input = $stdin.readlines.map(&:strip).reject(&:empty?)
+
+class Machine
+  def initialize(rs)
+    @rs = rs
+  end
+
+  def addr(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] + @rs[b]
+    nrs
+  end
+  def addi(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] + b
+    nrs
+  end
+  def mulr(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] * @rs[b]
+    nrs
+  end
+  def muli(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] * b
+    nrs
+  end
+  def banr(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] & @rs[b]
+    nrs
+  end
+  def bani(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] & b
+    nrs
+  end
+  def borr(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] | @rs[b]
+    nrs
+  end
+  def bori(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] | b
+    nrs
+  end
+  def setr(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a]
+    nrs
+  end
+  def seti(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = a
+    nrs
+  end
+  def gtir(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = a > @rs[b] ? 1 : 0
+    nrs
+  end
+  def gtri(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] > b ? 1 : 0
+    nrs
+  end
+  def gtrr(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] > @rs[b] ? 1 : 0
+    nrs
+  end
+  def eqir(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = a == @rs[b] ? 1 : 0
+    nrs
+  end
+  def eqri(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] == @rs[b] ? 1 : 0
+    nrs
+  end
+  def eqrr(a, b, c)
+    nrs = @rs.dup
+    nrs[c] = @rs[a] == @rs[b] ? 1 : 0
+    nrs
+  end
+
+  def oprs(a, b, c)
+    [
+      addr(a, b, c), addi(a, b, c),
+      mulr(a, b, c), muli(a, b, c),
+      banr(a, b, c), bani(a, b, c),
+      borr(a, b, c), bori(a, b, c),
+      setr(a, b, c), seti(a, b, c),
+      gtir(a, b, c), gtri(a, b, c), gtrr(a, b, c),
+      eqir(a, b, c), eqri(a, b, c), eqrr(a, b, c)
+    ]
+  end
+end
+
+gt3 = 0
+
+input.each_slice(3) do |sample|
+  sample[0] =~ /Before: \[(\d+), (\d+), (\d+), (\d+)\]/
+  break if $1.nil?
+  m = Machine.new([$1.to_i, $2.to_i, $3.to_i, $4.to_i])
+  sample[1] =~ /\d+ (\d+) (\d+) (\d+)/
+  oprs = m.oprs($1.to_i, $2.to_i, $3.to_i)
+  sample[2] =~ /After:  \[(\d+), (\d+), (\d+), (\d+)\]/
+  gt3 += 1 if oprs.count([$1.to_i, $2.to_i, $3.to_i, $4.to_i]) > 2
+end
+
+puts gt3
