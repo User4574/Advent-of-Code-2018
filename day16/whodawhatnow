@@ -111,6 +111,16 @@ oprsorder = {
   1<<2 => "eqir", 1<<1 => "eqri", 1<<0 => "eqrr"
 }
 
+opsorder = %w(
+  addr addi
+  mulr muli
+  banr bani
+  borr bori
+  setr seti
+  gtir gtri gtrr
+  eqir eqri eqrr
+)
+
 ops = [
   0b1111111111111111, 0b1111111111111111,
   0b1111111111111111, 0b1111111111111111,
@@ -136,6 +146,41 @@ input.each_slice(3) do |sample|
   ops[opc] &= oprs.map{|opr|opr == a ? 1 : 0}.join.to_i(2)
 end
 
-(0..15).each do |opc|
-  puts "#{opc}: #{oprsorder[ops[opc]]}"
+iopts = {
+  "addr" => [], "addi" => [],
+  "mulr" => [], "muli" => [],
+  "banr" => [], "bani" => [],
+  "borr" => [], "bori" => [],
+  "setr" => [], "seti" => [],
+  "gtir" => [], "gtri" => [], "gtrr" => [],
+  "eqir" => [], "eqri" => [], "eqrr" => []
+}
+
+ops.each_with_index do |op, opc|
+  ("%016b" % op).chars.each_with_index do |bit, istr|
+    if bit == "1" then
+      iopts[opsorder[istr]] << opc
+    end
+  end
+end
+
+res = []
+
+until iopts.values.map(&:empty?).all? do
+  iopts.each do |istr, opcs|
+    puts "#{istr}: #{opcs}"
+  end
+  puts
+
+  istr = iopts.select{|k, v| v.length == 1}.keys[0]
+  opc = iopts[istr][0]
+  res[opc] = istr
+
+  iopts.each do |k, v|
+    v.delete(opc)
+  end
+end
+
+res.each_with_index do |istr, opc|
+  puts "#{opc}: #{istr}"
 end
