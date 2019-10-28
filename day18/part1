@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+def adj(arr, r, c)
+  a = []
+
+  a << arr[r-1][c-1] if r > 0  && c > 0
+  a << arr[r-1][c  ] if r > 0
+  a << arr[r-1][c+1] if r > 0  && c < 49
+  a << arr[r  ][c-1] if           c > 0
+  a << arr[r  ][c+1] if           c < 49
+  a << arr[r+1][c-1] if r < 49 && c > 0
+  a << arr[r+1][c  ] if r < 49
+  a << arr[r+1][c+1] if r < 49 && c < 49
+
+  a
+end
+
+now = $stdin.readlines.map(&:strip).map{|x|x.split("")}
+nxt = []
+
+10.times do
+  50.times do |r|
+    nxtr = []
+    50.times do |c|
+      a = adj(now, r, c)
+      nxtr << case now[r][c]
+      when "."
+        if a.count("|") >= 3 then
+          "|"
+        else
+          "."
+        end
+      when "|"
+        if a.count("#") >= 3 then
+          "#"
+        else
+          "|"
+        end
+      when "#"
+        if a.count("#") > 0 && a.count("|") > 0 then
+          "#"
+        else
+          "."
+        end
+      end
+    end
+    nxt << nxtr
+  end
+
+  now = nxt
+  nxt = []
+end
+
+puts now.flatten.count("|") * now.flatten.count("#")
